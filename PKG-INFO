@@ -1,0 +1,103 @@
+Metadata-Version: 1.0
+Name: mathdom
+Version: 0.8
+Summary: MathDOM - Content MathML in Python
+Home-page: http://mathdom.sourceforge.net/
+Author: Stefan Behnel
+Author-email: scoder@users.sourceforge.net
+License: UNKNOWN
+Download-URL: http://prdownloads.sourceforge.net/mathdom/mathdom-0.8.tar.gz?download
+Description: MathDOM - Content MathML in Python
+        
+        **MathDOM** is a set of Python 2.4 modules (using PyXML_ or lxml_, and
+        pyparsing_) that import mathematical terms as a `Content MathML`_
+        DOM. It currently parses MathML and literal infix terms into a DOM
+        document and writes out MathML and literal infix/prefix/postfix/Python
+        terms. The DOM elements are enhanced by domain specific methods that
+        make using the DOM a little easier. Implementations based on PyXML and
+        lxml/libxml2 are available.
+        
+        .. _lxml:                  http://codespeak.net/lxml/
+        .. _pyparsing:             http://pyparsing.sourceforge.net/
+        .. _PyXML:                 http://pyxml.sourceforge.net/
+        .. _`Content MathML`:      http://www.w3.org/TR/MathML2/chapter4.html
+        .. _MathML:                http://www.w3.org/TR/MathML2/
+        .. _PyMathML:              http://pymathml.sourceforge.net/
+        
+        You can call it the shortest way between different term
+        representations and a Content MathML DOM. Ever noticed the annoying
+        differences between terms in different programming languages? Build
+        your application around MathDOM and stop caring about the term
+        representation that users prefer or that your machine can execute. If
+        you need a different representation, add a converter, but don't change
+        the model of your application. Literal terms are connected through an
+        intermediate AST step that makes writing converters for
+        SQL/Java/Lisp/*your-favourite* easy.
+        
+        New in version 0.8:
+        
+        - works with (and requires) lxml 2.0 or later
+        
+        New in version 0.7.2:
+        
+        - works with (and requires) lxml 1.3 or later
+        
+        New in version 0.7.1:
+        
+        - bug fix for operator qualifiers
+        
+        New in version 0.7:
+        
+        - works with lxml 0.9 out-of-the-box
+        
+        New in version 0.6.7:
+        
+        - added missing '%' operator (modulo)
+        - adapted to updated lxml API
+        
+        New in version 0.6.6:
+        
+        - closer APIs of mathdom and lmathdom
+        - convenience functions to portably create apply, ci and cn elements
+        
+        New in version 0.6.5:
+        
+        - XSLT extension function to include literal terms in output
+        - bug fix in Python term serializer
+        
+        New in version 0.6.4:
+        
+        - Updated setup.py script to use setuptools if available
+        - Support for splitting package into two PyXML and lxml dependent packages
+        - Now builds patched lxml during install
+        
+        New in version 0.6.3.1:
+        
+        - Fixes a number of bugs in mathdom and lmathdom modules
+        
+        New in version 0.6.2:
+        
+        - Generalized parser framework
+        - Python term parser
+        
+        New in version 0.6.1:
+        
+        - integration of the PyMathML_ renderer (untested!)
+        - more generic integration of XSLT scripts
+        
+        New in version 0.6:
+        
+        - RelaxNG validation (lxml)
+        - Presentation MathML export (based on XSLT/lxml)
+        - stricter spec conformance (encloses MathML output in <math> tag
+        
+Keywords: MathML xml DOM math parser validator
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Text Processing :: Markup :: XML
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

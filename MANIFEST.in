@@ -1,0 +1,13 @@
+
+include setup.py MANIFEST.in README LICENSE ChangeLog
+exclude html/*
+include html/*.png html/*.css html/MathDOM.html
+recursive-include test *.py
+include mathml/*.py mathml/utils/*.py mathml/schema/*.py
+include examples/infix.py
+
+include examples/ldom.py mathml/schema/mathml2.rng.gz mathml/utils/mathmlc2p.xsl mathml/utils/ctop.xsl
+include mathml/pmathml/*.py mathml/pmathml/backend/*.py
+recursive-exclude mathml/pmathml .cvsignore
+
+include examples/dom.py
