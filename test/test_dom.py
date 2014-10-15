@@ -32,86 +32,86 @@ def for_lmathdom(function):
 class MathdomTestCase(unittest.TestCase):
     @for_mathdom
     def test_math(self, mathdom, doc):
-        self.assertEquals( doc.firstChild.localName,
+        self.assertEqual( doc.firstChild.localName,
                            'math' )
     @for_lmathdom
     def test_lmath(self, lmathdom, doc):
-        self.assertEquals( doc.getroot().localName,
+        self.assertEqual( doc.getroot().localName,
                            'math' )
 
     @for_mathdom
     def test_create_constant(self, mathdom, doc):
         c = doc.createConstant(3)
-        self.assertEquals(c.serialize('infix'),
+        self.assertEqual(c.serialize('infix'),
                           '3')
     @for_lmathdom
     def test_lcreate_constant(self, lmathdom, doc):
         c = doc.createConstant(3)
-        self.assertEquals(c.serialize('infix'),
+        self.assertEqual(c.serialize('infix'),
                           '3')
 
 
     @for_mathdom
     def test_constant(self, mathdom, doc):
         c = mathdom.Constant(doc, 3)
-        self.assertEquals(doc.serialize('infix'),
+        self.assertEqual(doc.serialize('infix'),
                           '3')
     @for_lmathdom
     def test_lconstant(self, lmathdom, doc):
         c = lmathdom.Constant(doc, 3)
-        self.assertEquals(doc.serialize('infix'),
+        self.assertEqual(doc.serialize('infix'),
                           '3')
 
 
     @for_mathdom
     def test_create_identifier(self, mathdom, doc):
         i = doc.createIdentifier('bla')
-        self.assertEquals(i.serialize('infix'),
+        self.assertEqual(i.serialize('infix'),
                           'bla')
     @for_lmathdom
     def test_lcreate_identifier(self, lmathdom, doc):
         i = doc.createIdentifier('bla')
-        self.assertEquals(i.serialize('infix'),
+        self.assertEqual(i.serialize('infix'),
                           'bla')
 
 
     @for_mathdom
     def test_identifier(self, mathdom, doc):
         i = mathdom.Identifier(doc, 'bla')
-        self.assertEquals(doc.serialize('infix'),
+        self.assertEqual(doc.serialize('infix'),
                           'bla')
     @for_lmathdom
     def test_lconstant(self, lmathdom, doc):
         i = lmathdom.Identifier(doc, 'bla')
-        self.assertEquals(doc.serialize('infix'),
+        self.assertEqual(doc.serialize('infix'),
                           'bla')
 
 
     @for_mathdom
     def test_create_apply(self, mathdom, doc):
-        c = map(doc.createConstant, (1,2,3))
+        c = list(map(doc.createConstant, (1,2,3)))
         a = doc.createApply('plus', c)
-        self.assertEquals(a.serialize('infix'),
+        self.assertEqual(a.serialize('infix'),
                           '1 + 2 + 3')
     @for_lmathdom
     def test_lcreate_apply(self, lmathdom, doc):
-        c = map(doc.createConstant, (1,2,3))
+        c = list(map(doc.createConstant, (1,2,3)))
         a = doc.createApply('plus', c)
-        self.assertEquals(a.serialize('infix'),
+        self.assertEqual(a.serialize('infix'),
                           '1 + 2 + 3')
 
 
     @for_mathdom
     def test_apply(self, mathdom, doc):
-        c = map(doc.createConstant, (1,2,3))
+        c = list(map(doc.createConstant, (1,2,3)))
         a = mathdom.Apply(doc, 'plus', c)
-        self.assertEquals(doc.serialize('infix'),
+        self.assertEqual(doc.serialize('infix'),
                           '1 + 2 + 3')
     @for_lmathdom
     def test_lapply(self, lmathdom, doc):
-        c = map(doc.createConstant, (1,2,3))
+        c = list(map(doc.createConstant, (1,2,3)))
         a = lmathdom.Apply(doc, 'plus', c)
-        self.assertEquals(doc.serialize('infix'),
+        self.assertEqual(doc.serialize('infix'),
                           '1 + 2 + 3')
 
 

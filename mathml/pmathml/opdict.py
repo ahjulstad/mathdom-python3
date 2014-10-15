@@ -1,5 +1,6 @@
-import opdict_data
-import entities
+from . import opdict_data
+from . import entities
+import sys
 
 
 opdict = {}
@@ -22,9 +23,9 @@ for line in opdict_data.data.split('\n'):
     for token in tokens[1:]:
 	name, value = token.split('=')
 	attrs[name] = value[1:-1] # removes quotes
-    form = intern(attrs['form'])
+    form = sys.intern(attrs['form'])
     del attrs['form']
-    if opdict.has_key(content):
+    if content in opdict:
 	opdict[content][form] = attrs
     else:
 	opdict[content] = {form: attrs}

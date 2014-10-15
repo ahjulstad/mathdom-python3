@@ -20,6 +20,7 @@ from itertools import *
 
 from mathml.termparser import (ConverterRegistry,
                                TERM_OPERATOR_ORDER, BOOL_CMP_OPERATORS)
+import collections
 
 class TermBuilder(object):
     "Abstract superclass for term builders."
@@ -41,7 +42,7 @@ class TermBuilder(object):
         for name in dir(self):
             if name.startswith('_handle_'):
                 method = getattr(self, name)
-                if callable(method):
+                if isinstance(method, collections.Callable):
                     dispatcher_dict[ name[8:] ] = method
         return dispatcher_dict
 
@@ -62,11 +63,11 @@ class TermBuilder(object):
         if operator == 'name' or operator[:6] == 'const:':
             return children
         return [ ' '.join(operand)
-                 for operand in imap(self._recursive_build, children, repeat(status)) ]
+                 for operand in map(self._recursive_build, children, repeat(status)) ]
 
     def _handle(self, operator, operands, status):
         "Unknown operators (including functions) end up here."
-        raise NotImplementedError, "_handle(%s)" % operator
+        raise NotImplementedError("_handle(%s)" % operator)
 
     def _handleOP(self, operator, operands, status):
         "Arithmetic and boolean operators end up here. Default is to call self._handle()"
@@ -77,7 +78,7 @@ class TermBuilder(object):
         operator = tree[0]
         operands = self._build_children(operator, tree[1:], status)
 
-        dispatch_name = operator.replace(u':', u'_') # const:*, list:*
+        dispatch_name = operator.replace(':', '_') # const:*, list:*
 
         dispatch = dispatcher.get(dispatch_name)
         if dispatch:
@@ -98,16 +99,17 @@ class TermBuilder(object):
 class LiteralTermBuilder(TermBuilder):
     "Abstract superclass for literal term builders."
     _INTERVAL_NOTATION = {
-        u'closed'      : u'[%s]',
-        u'closed-open' : u'[%s)',
-        u'open-closed' : u'(%s]',
-        u'open'        : u'(%s)'
+        'closed'      : '[%s]',
+        'closed-open' : '[%s)',
+        'open-closed' : '(%s]',
+        'open'        : '(%s)'
         }
 
     _NAME_MAP = {}
 
     def _handle_name(self, operator, operands, affin):
-        name = unicode(str(operands[0]), 'ascii')
+        name = str(operands[0])
+#        name = str(str(operands[0]), 'ascii')
         return [ self._NAME_MAP.get(name, name) ]
 
     def _handle_const_bool(self, operator, operands, status):
@@ -115,25 +117,26 @@ class LiteralTermBuilder(TermBuilder):
 
     def _handle_const_complex(self, operator, operands, status):
         value = operands[0]
-        return [ u'(%s%s%si)' % (value.real_str, (value.imag >= 0) and '+' or '', value.imag_str) ]
+        return [ '(%s%s%si)' % (value.real_str, (value.imag >= 0) and '+' or '', value.imag_str) ]
 
     def _handle_const_rational(self, operator, operands, status):
         value = operands[0]
-        return [ u'(%s/%s)' % (value.num_str, value.denom_str) ]
+        return [ '(%s/%s)' % (value.num_str, value.denom_str) ]
 
     def _handle_const_enotation(self, operator, operands, status):
-        return [ unicode(operands[0]) ]
+        return [ str(operands[0]) ]
 
     def _handle_const(self, operator, operands, status):
-        return [ unicode(str(operands[0]).lower(), 'ascii') ]
+        return [ str(operands[0]).lower() ]
+#        return [ str(str(operands[0]).lower(), 'ascii') ]
 
     def _handle_list(self, operator, operands, status):
-        assert operator == u'list'
-        return [ u'(%s)' % u','.join(operands) ]
+        assert operator == 'list'
+        return [ '(%s)' % ','.join(operands) ]
 
     def _handle_interval(self, operator, operands, status):
-        assert operator[:9] == u'interval:'
-        return [ self._INTERVAL_NOTATION[ operator[9:] ] % u','.join(operands) ]
+        assert operator[:9] == 'interval:'
+        return [ self._INTERVAL_NOTATION[ operator[9:] ] % ','.join(operands) ]
 
 
 class InfixTermBuilder(LiteralTermBuilder):
@@ -176,13 +179,13 @@ class InfixTermBuilder(LiteralTermBuilder):
             if len(operands) == 1:
                 return ['(', output_operator, operands[0], ')'] # safe bet
             else:
-                return chain(chain(*zip(chain('(', repeat(output_operator)), operands)), ')')
+                return chain(chain(*list(zip(chain('(', repeat(output_operator)), operands))), ')')
         else:
             if len(operands) == 1:
                 return [output_operator, operands[0]]
             else:
-                return chain((operands[0],), chain(*zip(chain(repeat(output_operator)),
-                                                        islice(operands, 1, None))))
+                return chain((operands[0],), chain(*list(zip(chain(repeat(output_operator)),
+                                                        islice(operands, 1, None)))))
 
     def _handle(self, operator, operands, affin_status):
         return [ self._map_operator(operator), '(', ', '.join(operands), ')' ]

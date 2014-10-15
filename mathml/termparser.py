@@ -48,7 +48,7 @@ except ImportError:
 from itertools import *
 from pyparsing import *
 
-from datatypes import Decimal, Complex, Rational, ENotation
+from .datatypes import Decimal, Complex, Rational, ENotation
 
 
 # The recognised operators (each one surrounded by spaces!)
@@ -333,7 +333,7 @@ class BoolParserBase(object):
 
     def build_term_parser(self):
         "Default: raise NotImplementedError"
-        raise NotImplementedError, "build_term_parser()"
+        raise NotImplementedError("build_term_parser()")
 
     def build_tokenizer(self):
         "Default: copy tokenizer from self.term_parser"
@@ -490,7 +490,7 @@ class ConverterRegistry(object):
     def register_converter(self, converter_type, converter):
         "Register a converter for a converter type."
         if hasattr(self, '_METHOD_NAME') and not hasattr(converter, self._METHOD_NAME):
-            raise TypeError, "Converters must have a '%s' method." % self._METHOD_NAME
+            raise TypeError("Converters must have a '%s' method." % self._METHOD_NAME)
         self._converters[converter_type] = converter
 
     __setitem__ = register_converter
@@ -510,7 +510,7 @@ class ConverterRegistry(object):
 
     def known_types(self):
         "Return the currently registered converter types."
-        return self._converters.keys()
+        return list(self._converters.keys())
 
     def convert(self, value, conversion_type):
         converter = self._converters[conversion_type]

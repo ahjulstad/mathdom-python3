@@ -1,5 +1,5 @@
-from element import *
-from mrow    import MRow
+from .element import *
+from .mrow    import MRow
 
 _default_math_attributes = {
     "fontsize":			"12pt",
@@ -21,7 +21,7 @@ class Math(Element):
 	self.strategy = MRow.Strategy()
 	for child in children:
 	    self.addChild(child)
-	for key, val in _default_math_attributes.iteritems():
+	for key, val in _default_math_attributes.items():
 	    self.setAttribute(key, val)
 
     def update(self):

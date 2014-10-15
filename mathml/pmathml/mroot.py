@@ -1,5 +1,5 @@
-from element import *
-from mrow import *
+from .element import *
+from .mrow import *
 import math
 
 class MRoot(Element):

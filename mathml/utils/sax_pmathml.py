@@ -14,19 +14,21 @@ class MathMLHandler(xml.sax.handler.ContentHandler):
     def characters(self, content):
 	self.current.text += content
 
-    def startElementNS(self, (ns, name), qname, attrs):
+    def startElementNS(self, xxx_todo_changeme, qname, attrs):
+	(ns, name) = xxx_todo_changeme
 	elem = self.Elem()
 	elem.parent = self.current
 	elem.parent.children.append(elem)
 	elem.text = ''
 	elem.attributes = {}
-	for key, value in attrs.items():
+	for key, value in list(attrs.items()):
 	    elem.attributes[key] = value
 	elem.children = []
 	elem.name = name
 	self.current = elem
 
-    def endElementNS(self, (ns, name), qname):
+    def endElementNS(self, xxx_todo_changeme1, qname):
+	(ns, name) = xxx_todo_changeme1
 	self.current = self.current.parent
 
     def __buildTreeRecursive(self, node):
@@ -34,9 +36,9 @@ class MathMLHandler(xml.sax.handler.ContentHandler):
 	if issubclass(klass, MToken):
 	    element = klass(self.plotter, node.text.strip())
 	else:
-	    children = map(self.__buildTreeRecursive, node.children)
+	    children = list(map(self.__buildTreeRecursive, node.children))
 	    element = klass(self.plotter, children)
-	for name, value in node.attributes.items():
+	for name, value in list(node.attributes.items()):
 	    element.setAttribute(name, value)
 	return element
 

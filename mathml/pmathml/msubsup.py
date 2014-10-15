@@ -1,6 +1,6 @@
-from element import *
+from .element import *
 import warnings
-import munderover
+from . import munderover
 
 _SUB_MAX_POSITION          = 1/3.0 # relative to the base height
 _SUP_MIN_POSITION          = 2/3.0 # relative to the base height

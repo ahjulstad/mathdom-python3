@@ -23,7 +23,7 @@ class GtkPlotter(mathml.plotter.Plotter):
 	resolution_mm = (gtk.gdk.screen_height() /
 			 float(gtk.gdk.screen_height_mm()))
 	self.pt_resolution = resolution_mm * 0.3514598;
-	print "self.pt_resolution", self.pt_resolution
+	print("self.pt_resolution", self.pt_resolution)
 	widget.connect('size-allocate', self._size_allocate_cb)
 	widget.connect('realize', self._realize_cb)
 	#widget.connect('expose-event', self._expose_event)

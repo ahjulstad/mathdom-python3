@@ -1,6 +1,6 @@
-from element import *
-import mrow
-from mtoken import MOperator
+from .element import *
+from . import mrow
+from .mtoken import MOperator
 import re
 
 '''

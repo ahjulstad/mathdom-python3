@@ -5,7 +5,7 @@ except ImportError:
     pass
 
 import sys
-from itertools import imap
+
 
 # Maybe we are still before installation?
 sys.path.append('..')
@@ -20,46 +20,46 @@ infix_converter = tree_converters['infix']
 
 def write_infix(doc):
     tree = dom_to_tree(doc)
-    print "SERIALIZED:"
-    print infix_converter.build(tree)
+    print("SERIALIZED:")
+    print(infix_converter.build(tree))
 
 
 def handle_term(term):
-    print "ORIGINAL:"
-    print term
-    print
+    print("ORIGINAL:")
+    print(term)
+    print()
 
     doc = None
     for term_type in term_parsers.known_types():
-        print "Trying to parse '%s' ..." % term_type,
+        print("Trying to parse '%s' ..." % term_type, end=' ')
         try:
             doc = MathDOM.fromString(term, term_type)
-            print "done."
+            print("done.")
             break
-        except ParseException, e:
-            print "Parsing as %s failed: %s" % (term_type, unicode(e).encode('UTF-8'))
+        except ParseException as e:
+            print("Parsing as %s failed: %s" % (term_type, str(e).encode('UTF-8')))
 
     if doc is None:
-        print "The term is not parsable."
+        print("The term is not parsable.")
         sys.exit(0)
 
 
-    print "MathML parsing done."
-    print
+    print("MathML parsing done.")
+    print()
     write_infix(doc)
 
-    print
-    print "Exchanging '+' and '-' ..."
-    print
-    for apply_tag in doc.getElementsByTagName(u'apply'):
+    print()
+    print("Exchanging '+' and '-' ...")
+    print()
+    for apply_tag in doc.getElementsByTagName('apply'):
         operator = apply_tag.operatorname()
-        if operator == u'plus':
-            apply_tag.set_operator(u'minus')
-        elif operator == u'minus' and apply_tag.operand_count() > 1:
-            apply_tag.set_operator(u'plus')
+        if operator == 'plus':
+            apply_tag.set_operator('minus')
+        elif operator == 'minus' and apply_tag.operand_count() > 1:
+            apply_tag.set_operator('plus')
     write_infix(doc)
 
-    print
+    print()
     try:
         doc.xpath
         has_xpath = True
@@ -67,24 +67,24 @@ def handle_term(term):
         has_xpath = False
 
     if has_xpath:
-        print "Searching for negative numbers using XPath expression '//math:cn[number() < 0]' ..."
-        print
+        print("Searching for negative numbers using XPath expression '//math:cn[number() < 0]' ...")
+        print()
         for cn_tag in doc.xpath('//math:cn[number() < 0]'):
             value = cn_tag.value()
-            print "%s [%s]" % (value, type(value))
+            print("%s [%s]" % (value, type(value)))
 
-        print
-        print "Serializing all sub-terms using XPath '//math:apply' ..."
-        print
+        print()
+        print("Serializing all sub-terms using XPath '//math:apply' ...")
+        print()
 
         for apply_tag in doc.xpath('//math:apply'):
-            print apply_tag.serialize(converter=infix_converter)
+            print(apply_tag.serialize(converter=infix_converter))
 
     else:
-        print "XPath not installed. Skipping test."
+        print("XPath not installed. Skipping test.")
 
-    print
-    print 'Done.'
+    print()
+    print('Done.')
 
 
 if __name__ == '__main__':
@@ -93,9 +93,9 @@ if __name__ == '__main__':
         handle_term( sys.stdin.read() )
     else:
         while True:
-            print "Please enter an infix term or leave empty to proceed with an example term. 'exit' exits."
+            print("Please enter an infix term or leave empty to proceed with an example term. 'exit' exits.")
             try:
-                term = raw_input('# ')
+                term = input('# ')
             except EOFError:
                 sys.exit(0)
 

@@ -1,5 +1,5 @@
 ## This driver uses the Cairo 2D library together with Pango
-from __future__ import division
+
 import mathml
 import warnings
 import pango

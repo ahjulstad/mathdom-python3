@@ -4,7 +4,7 @@ sys.path.insert(0, '..')
 
 import unittest, types
 from itertools import count, chain, starmap
-from StringIO import StringIO
+from io import StringIO
 
 from mathml.termparser   import term_parsers, ParseException
 from mathml.termbuilder  import tree_converters
@@ -131,7 +131,7 @@ def build_test_class(term_type, terms, mathdom):
         return "%-8s - %-9s - %s: %s" % (impl_name, test_name, class_name.replace('_', ' '), term)
 
     def build_term_test_method(test_method, term, result):
-        if isinstance(result, types.ClassType) and issubclass(result, Exception):
+        if isinstance(result, type) and issubclass(result, Exception):
             def test(self):
                 self.assertRaises(result, test_method, term, term_type, mathdom)
         else:
@@ -143,23 +143,23 @@ def build_test_class(term_type, terms, mathdom):
                 else:
                     for r in result_iter:
                         self.assertEqual(r, result)
-        test.__doc__ = docstr(test_method.func_name, term)
+        test.__doc__ = docstr(test_method.__name__, term)
         return test
 
     def build_dom_test_method(term):
         def test(self):
             doc = mathdom.fromString(term, term_type)
             root = doc.xpath("/*")[0]
-            self.assertEquals(root.mathtype(), u'math')
+            self.assertEqual(root.mathtype(), 'math')
             element = root.firstChild
             if hasattr(element, 'value'):
                 value = eval(term)
-                self.assertEquals(element.value(), value)
+                self.assertEqual(element.value(), value)
             elif element.mathtype() == 'apply':
-                self.assert_(element.firstChild.mathtype() in ALL_OPERATORS,
+                self.assertTrue(element.firstChild.mathtype() in ALL_OPERATORS,
                              element.firstChild.mathtype())
             else:
-                self.assert_(element.mathtype() in ('piecewise', 'true', 'false', 'imaginaryi', 'exponentiale'))
+                self.assertTrue(element.mathtype() in ('piecewise', 'true', 'false', 'imaginaryi', 'exponentiale'))
         test.__doc__ = docstr("dom_work", term)
         return test
 
@@ -171,7 +171,7 @@ def build_test_class(term_type, terms, mathdom):
                 xml_out = StringIO()
                 result.write(xml_out, 'UTF-8')
                 result = xml_out.getvalue()
-            self.assert_(result, type(result))
+            self.assertTrue(result, type(result))
         test.__doc__ = docstr(output_type, term)
         return test
 
@@ -180,7 +180,7 @@ def build_test_class(term_type, terms, mathdom):
             return None
         def test(self):
             doc = mathdom.fromString(term, term_type)
-            self.assert_(doc.validate())
+            self.assertTrue(doc.validate())
         test.__doc__ = docstr("validate", term)
         return test
 
@@ -201,7 +201,7 @@ def build_test_class(term_type, terms, mathdom):
         def test(self):
             doc = etree.ElementTree(mathdom.fromString(term, term_type).getroot())
             pyterm = str( stylesheet(doc) )
-            self.assertEquals(pyeval( (term_type, term) ).next(), eval(pyterm))
+            self.assertEqual(next(pyeval( (term_type, term) )), eval(pyterm))
         test.__doc__ = docstr("xslt_ext", term)
         return test
 
@@ -211,18 +211,18 @@ def build_test_class(term_type, terms, mathdom):
         test.__doc__ = docstr('errors', term)
         return test
 
-    next_test_name = ("test_%05d" % i for i in count()).next
+    next_test_name = ("test_%05d" % i for i in count()).__next__
 
-    invalid_terms = sorted( term for (term, result) in terms.iteritems()
-                            if isinstance(result, (types.ClassType, type)) )
+    invalid_terms = sorted( term for (term, result) in terms.items()
+                            if isinstance(result, type) )
 
     tests =  dict(
         (next_test_name(), build_parser_test(term))
          for term in invalid_terms
          )
 
-    valid_terms = sorted( (term, result) for (term, result) in terms.iteritems()
-                          if not isinstance(result, (types.ClassType, type)) )
+    valid_terms = sorted( (term, result) for (term, result) in terms.items()
+                          if not isinstance(result, type) )
 
     tests.update(
         (next_test_name(), build_term_test_method(test_method, term, result))
@@ -276,11 +276,11 @@ if __name__ == '__main__':
     test_classes = starmap(build_test_class,
                            ( (term_type, terms, mathdom)
                              for mathdom in mathdom_impls
-                             for term_type, terms in TERMS.iteritems()
+                             for term_type, terms in TERMS.items()
                              )
                            )
 
     test_suite = unittest.TestSuite()
-    test_suite.addTests(map(unittest.makeSuite, test_classes))
+    test_suite.addTests(list(map(unittest.makeSuite, test_classes)))
 
     unittest.TextTestRunner(verbosity=2).run(test_suite)

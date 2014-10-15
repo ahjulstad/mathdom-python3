@@ -27,7 +27,7 @@ u'a + 3 * ( 4 + 5 + 1 ) + 1'
 """
 
 import sys
-from StringIO import StringIO
+from io import StringIO
 
 from lxml import etree as _etree
 from lxml.etree import SubElement, ElementTree
@@ -58,32 +58,32 @@ STYLESHEET_TRANSFORMERS = {}
 # prepare XSL stylesheets
 STYLESHEETS = {}
 from os import path
-for xsl_name, (input_type, output_type) in STYLESHEET_MAPPING.iteritems():
+for xsl_name, (input_type, output_type) in STYLESHEET_MAPPING.items():
     try:
         STYLESHEETS[output_type] = (input_type, UTILS_STYLESHEETS[xsl_name])
     except KeyError: # not available
         pass
-    except Exception, e:
-        print "Error loading stylesheet %s:" % xsl_name, e
+    except Exception as e:
+        print("Error loading stylesheet %s:" % xsl_name, e)
         pass
 
 xslt = None
 l = len(STYLESHEETS) + 1
 while l > len(STYLESHEETS):
     l = len(STYLESHEETS)
-    for output_type, (input_type, xslt) in STYLESHEETS.items():
+    for output_type, (input_type, xslt) in list(STYLESHEETS.items()):
         if input_type != 'mathml' and input_type not in STYLESHEETS:
             del STYLESHEETS[output_type]
 
 xslts = None
-for output_type, (input_type, xslt) in STYLESHEETS.items():
+for output_type, (input_type, xslt) in list(STYLESHEETS.items()):
     STYLESHEET_TRANSFORMERS[output_type] = xslts = []
     input_type = None
     while input_type != 'mathml':
         try:
             input_type, xslt = STYLESHEETS[output_type]
         except KeyError:
-            raise ValueError, "Unsupported output format %s, please install appropriate stylesheets" % output_type
+            raise ValueError("Unsupported output format %s, please install appropriate stylesheets" % output_type)
         xslts.insert(0, xslt)
         output_type = input_type
 
@@ -103,7 +103,7 @@ _ANCESTOR_XPATH = _etree.XPath('ancestor::math:*[1]', namespaces=_MATH_NS_DICT)
 _parser = _etree.XMLParser(remove_blank_text=True)
 
 def _tag_name(local_name):
-    return u"{%s}%s" % (MATHML_NAMESPACE_URI, local_name)
+    return "{%s}%s" % (MATHML_NAMESPACE_URI, local_name)
 
 def SiblingElement(_element, _tag, *args, **kwargs):
     return SubElement(_element.getparent(), _tag, *args, **kwargs)
@@ -144,7 +144,7 @@ class Qualifier(object):
         if qualifier_node is None:
             qualifier_node = SiblingElement(node, self.name)
 
-        if isinstance(value, (str, unicode)):
+        if isinstance(value, str):
             qualifier_node.clear()
             qualifier_node.text = value
         else:
@@ -252,7 +252,7 @@ class math_cn(SerializableMathElement):
     VALID_TYPES = ("real", "integer", "rational")
     def __repr__(self):
         name = self.localName
-        return u"<%s type='%s'>%r</%s>" % (name, self.get('type', 'real'), self.value(), name)
+        return "<%s type='%s'>%r</%s>" % (name, self.get('type', 'real'), self.value(), name)
 
     def valuetype(self):
         typeattr = self.get('type')
@@ -279,7 +279,7 @@ class math_cn(SerializableMathElement):
         try:
             tuple_value = (value.real_str, value.imag_str)
         except AttributeError:
-            tuple_value = (unicode(value.real), unicode(value.imag))
+            tuple_value = (str(value.real), str(value.imag))
         self._set_tuple_value('complex', tuple_value)
 
     def value(self):
@@ -294,13 +294,13 @@ class math_cn(SerializableMathElement):
             typeclass = TYPE_MAP[valuetype]
             return typeclass(self.text, self[0].tail)
         except KeyError:
-            raise NotImplementedError, "Invalid data type."
+            raise NotImplementedError("Invalid data type.")
 
     def _set_tuple_value(self, type_name, value_tuple):
         self.clear()
-        self.text = unicode(value_tuple[0])
+        self.text = str(value_tuple[0])
         sep = SubElement(self, _tag_name('sep'))
-        sep.tail  = unicode(value_tuple[1])
+        sep.tail  = str(value_tuple[1])
         self.set('type', type_name)
 
     def set_value(self, value, type_name=None):
@@ -316,24 +316,24 @@ class math_cn(SerializableMathElement):
             try:
                 type_name = value.TYPE_NAME
             except AttributeError:
-                if isinstance(value, (int, long)):
+                if isinstance(value, int):
                     type_name = 'integer'
                 elif isinstance(value, float):
                     type_name = 'real'
                 else:
-                    raise TypeError, "Invalid value type. Please specify type name."
+                    raise TypeError("Invalid value type. Please specify type name.")
         elif type_name not in self.VALID_TYPES:
-            raise ValueError, "Unsupported type name."
+            raise ValueError("Unsupported type name.")
         self.clear()
         self.set('type', type_name)
-        self.text = unicode(value)
+        self.text = str(value)
 
 
 class math_ci(SerializableMathElement):
     IMPLEMENTS = 'ci'
     def __repr__(self):
         name = self.localName
-        return u"<%s>%r</%s>" % (name, self[0], name)
+        return "<%s>%r</%s>" % (name, self[0], name)
 
     def value(self):
         return self[0]
@@ -359,12 +359,12 @@ class math_apply(SerializableMathElement):
     def set_operator(self, new_operator):
         operands = self[1:]
         self.clear()
-        if isinstance(new_operator, (str, unicode)):
+        if isinstance(new_operator, str):
             SubElement(self, _tag_name(new_operator))
         elif isinstance(new_operator, MathElement):
             operands.insert(0, new_operator)
         else:
-            raise ValueError, "Operator value has invalid type, use strings or math elements."
+            raise ValueError("Operator value has invalid type, use strings or math elements.")
         for operand in operands:
             self.append(operand)
 
@@ -376,7 +376,7 @@ class math_apply(SerializableMathElement):
 
     def append_operand(self, operand):
         if not len(self):
-            raise TypeError, "You must supply an operator first."
+            raise TypeError("You must supply an operator first.")
         self.append(operand)
 
 
@@ -634,7 +634,7 @@ def _prepare_mathml_classes():
 _setup_logbase()
 del _setup_logbase
 
-_all_names = vars().values()
+_all_names = list(vars().values())
 _all_mathml_classes = _prepare_mathml_classes()
 del _all_names, _prepare_mathml_classes
 

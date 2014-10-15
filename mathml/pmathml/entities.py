@@ -1170,7 +1170,7 @@ map_utf8 = {
 }
 
 map = {}
-for key, val in map_utf8.iteritems():
+for key, val in map_utf8.items():
     try:
 	map[key] = val.decode("utf-8")
     except: continue

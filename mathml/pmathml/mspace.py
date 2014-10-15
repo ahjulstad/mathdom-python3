@@ -1,4 +1,4 @@
-from element import Element, xml_mapping
+from .element import Element, xml_mapping
 import warnings
 
 class MSpace(Element):

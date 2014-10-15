@@ -1,6 +1,6 @@
-from element import *
+from .element import *
 import warnings
-import msubsup
+from . import msubsup
 _ACCENT_SPACING = 0.05
 _LIMIT_SPACING  = 0.20
 

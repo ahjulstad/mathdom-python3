@@ -1,5 +1,6 @@
-from element import *
+from .element import *
 import warnings
+import sys
 
 class MFrac(Element):
     def __init__(self, plotter, children):
@@ -18,9 +19,9 @@ class MFrac(Element):
 
 	self.linethickness = self.getAttribute("linethickness", recursive=0,
 					       default="1").float
-	numalign      = intern(self.getAttribute("numalign", recursive=0,
+	numalign      = sys.intern(self.getAttribute("numalign", recursive=0,
 						 default="center").str)
-	denomalign    = intern(self.getAttribute("denomalign", recursive=0,
+	denomalign    = sys.intern(self.getAttribute("denomalign", recursive=0,
 						 default="center").str)
 	beveled       = self.getAttribute("bevelled", recursive=0,
 					  default="false").bool

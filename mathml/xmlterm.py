@@ -83,35 +83,36 @@ from mathml.termbuilder import tree_converters
 
 
 def mkstr(value):
-    if isinstance(value, (str, unicode)):
+    if isinstance(value, str):
         return value
     else:
-        return unicode(str(value), 'ascii')
+        return str(value)
+#        return str(str(value), 'ascii')
 
 
 _ELEMENT_CONSTANT_MAP = {
-    u'true'  : u'true',
-    u'false' : u'false',
-    u'pi'    : u'pi',
-    u'i'     : u'imaginaryi',
-    u'e'     : u'exponentiale'
+    'true'  : 'true',
+    'false' : 'false',
+    'pi'    : 'pi',
+    'i'     : 'imaginaryi',
+    'e'     : 'exponentiale'
     }
 
 _FUNCTION_MAP = {
-    '+' : u'plus',
-    '-' : u'minus',
-    '*' : u'times',
-    '/' : u'divide',
-    '%' : u'rem',
-    '^' : u'power',
-    '|' : u'factorof',
-    '=' : u'eq',
-    '<>': u'neq',
-    '!=': u'neq',
-    '>' : u'gt',
-    '>=': u'geq',
-    '<=': u'leq',
-    '<' : u'lt',
+    '+' : 'plus',
+    '-' : 'minus',
+    '*' : 'times',
+    '/' : 'divide',
+    '%' : 'rem',
+    '^' : 'power',
+    '|' : 'factorof',
+    '=' : 'eq',
+    '<>': 'neq',
+    '!=': 'neq',
+    '>' : 'gt',
+    '>=': 'geq',
+    '<=': 'leq',
+    '<' : 'lt',
     }
 
 
@@ -130,37 +131,37 @@ def serialize_dom(doc_or_element, output_format=None, converter=None):
     if converter is None:
         converter = tree_converters.fortype(output_format)
         if converter is None:
-            raise ValueError, "Unsupported output format '%s'" % output_format
+            raise ValueError("Unsupported output format '%s'" % output_format)
     tree = dom_to_tree(doc_or_element)
     return converter.build(tree)
 
 
 def dom_to_tree(doc_or_element):
     "Convert a MathDOM document or element into its AST representation."
-    map_operator = dict((v,n) for (n,v) in _FUNCTION_MAP.iteritems()).get
-    map_constant = dict((v,n) for (n,v) in _ELEMENT_CONSTANT_MAP.iteritems()).get
+    map_operator = dict((v,n) for (n,v) in _FUNCTION_MAP.items()).get
+    map_constant = dict((v,n) for (n,v) in _ELEMENT_CONSTANT_MAP.items()).get
     def _recursive_piecewise(piecewise):
         "piecewise -> [ case, p1cond, p1value, [ case, p2cond, p2val, [ ... , otherwise ]]]"
         def _piece_to_case(piece):
             children = piece.childNodes
             if len(children) != 2:
-                raise NotImplementedError, u"piece element has %d children, 2 allowed" % len(children)
-            value, condition = map(_recursive_dom_to_tree, children)
-            return [ u'case', condition, value ]
+                raise NotImplementedError("piece element has %d children, 2 allowed" % len(children))
+            value, condition = list(map(_recursive_dom_to_tree, children))
+            return [ 'case', condition, value ]
 
         otherwise = None
         case = []
         last_case = case
         for piece in piecewise:
             name = piece.localName
-            if name == u'piece':
+            if name == 'piece':
                 new_case = _piece_to_case(piece)
                 last_case.append(new_case)
                 last_case = new_case
-            elif name == u'otherwise':
+            elif name == 'otherwise':
                 otherwise = _recursive_dom_to_tree(piece.firstChild)
             else:
-                raise NotImplementedError, u"Unknown element in piecewise: %s" % name
+                raise NotImplementedError("Unknown element in piecewise: %s" % name)
         if otherwise:
             if last_case:
                 last_case.append(otherwise)
@@ -173,35 +174,35 @@ def dom_to_tree(doc_or_element):
 
         constant = map_constant(mtype)
         if constant:
-            if constant in (u'true', u'false'):
-                return [ u'const:bool', constant == u'true' ]
+            if constant in ('true', 'false'):
+                return [ 'const:bool', constant == 'true' ]
             else:
-                return [ u'name', constant ]
-        elif mtype == u'ci':
-            return [ u'name', element.name() ]
-        elif mtype == u'cn':
-            return [ u'const:%s' % element.valuetype().replace('-', ''), element.value() ]
-        elif mtype == u'apply':
+                return [ 'name', constant ]
+        elif mtype == 'ci':
+            return [ 'name', element.name() ]
+        elif mtype == 'cn':
+            return [ 'const:%s' % element.valuetype().replace('-', ''), element.value() ]
+        elif mtype == 'apply':
             operator = element.operator()
             if operator.childNodes:
-                raise NotImplementedError, u"function composition is not supported"
+                raise NotImplementedError("function composition is not supported")
             name = operator.mathtype()
 
-            operands = map(_recursive_dom_to_tree, element.operands())
+            operands = list(map(_recursive_dom_to_tree, element.operands()))
             operands.insert(0, map_operator(name, name))
             return operands
-        elif mtype == u'piecewise':
+        elif mtype == 'piecewise':
             return _recursive_piecewise(element)
-        elif mtype == u'list':
-            list_items = map(_recursive_dom_to_tree, element)
+        elif mtype == 'list':
+            list_items = list(map(_recursive_dom_to_tree, element))
             list_items.insert(0, mtype)
             return list_items
-        elif mtype == u'interval':
-            list_items = map(_recursive_dom_to_tree, element)
+        elif mtype == 'interval':
+            list_items = list(map(_recursive_dom_to_tree, element))
             list_items.insert(0, '%s:%s' % (mtype, element.closure()))
             return list_items
         else:
-            raise NotImplementedError, u"%s elements are not supported" % mtype
+            raise NotImplementedError("%s elements are not supported" % mtype)
 
     try:
         root = doc_or_element.documentElement
@@ -211,7 +212,7 @@ def dom_to_tree(doc_or_element):
         except AttributeError:
             root = doc_or_element
 
-    if root.mathtype() == u'math':
+    if root.mathtype() == 'math':
         root = root.firstChild
     tree = _recursive_dom_to_tree(root)
     if not isinstance(tree, list):
@@ -286,17 +287,17 @@ class SaxTerm(XMLReader):
         parser.startDocument()
         parser.startPrefixMapping(None, MATHML_NAMESPACE_URI)
 
-        self._open_tag(u'math')
+        self._open_tag('math')
         self._recursive_tree_to_sax(tree)
-        self._close_tag(u'math')
+        self._close_tag('math')
 
         parser.endPrefixMapping(None)
         parser.endDocument()
 
     def _attributes(self, **attributes):
         values, qnames = {}, {}
-        for name, value in attributes.iteritems():
-            name = unicode(name)
+        for name, value in attributes.items():
+            name = str(name)
             ns_name = (None, name)
             qnames[ns_name] = name
             values[ns_name] = value
@@ -308,30 +309,30 @@ class SaxTerm(XMLReader):
         mapped_operator = self.map_operator(operator)
         if mapped_operator:
             self._send_function(mapped_operator, tree)
-        elif operator == u'name':
+        elif operator == 'name':
             name = mkstr(tree[1])
             constant = self.map_constant(name)
             if constant:
                 self._write_element(constant)
             else:
-                self._write_element(u'ci', name)
-        elif operator.startswith(u'const:'):
-            if operator == u'const:bool':
-                self._write_element(tree[1] and u'true' or u'false')
-            elif operator in (u'const:complex', u'const:rational'):
+                self._write_element('ci', name)
+        elif operator.startswith('const:'):
+            if operator == 'const:bool':
+                self._write_element(tree[1] and 'true' or 'false')
+            elif operator in ('const:complex', 'const:rational'):
                 self._send_bin_constant(operator[6:], tree[1])
-            elif operator == u'const:enotation':
+            elif operator == 'const:enotation':
                 self._send_bin_constant('e-notation', tree[1])
             else:
-                self._write_element(u'cn', mkstr(tree[1]),
+                self._write_element('cn', mkstr(tree[1]),
                                     self._attributes(type=operator[6:]))
-        elif operator == u'case':
+        elif operator == 'case':
             self._send_case(tree)
-        elif operator[:4] == u'list':
-            self._send_list(tree, u'list', self.NO_ATTR)
-        elif operator[:9] == u'interval:':
+        elif operator[:4] == 'list':
+            self._send_list(tree, 'list', self.NO_ATTR)
+        elif operator[:9] == 'interval:':
             closure = self._attributes(closure=operator[9:] or 'closed')
-            self._send_list(tree, u'interval', closure)
+            self._send_list(tree, 'interval', closure)
         else:
             self._send_function(operator, tree)
 
@@ -339,35 +340,35 @@ class SaxTerm(XMLReader):
         try:
             parts = tuple(value)
         except:
-            raise NotImplementedError, "Only MathDOM types are constant pairs."
+            raise NotImplementedError("Only MathDOM types are constant pairs.")
 
-        parts = map(mkstr, parts)
+        parts = list(map(mkstr, parts))
 
         parser  = self.parser
-        self._open_tag(u'cn', self._attributes(type=typename))
+        self._open_tag('cn', self._attributes(type=typename))
         parser.characters(parts[0])
-        self._write_element(u'sep')
+        self._write_element('sep')
         parser.characters(parts[1])
-        self._close_tag(u'cn')
+        self._close_tag('cn')
 
     def _send_case(self, tree):
         el_open  = self._open_tag
         el_close = self._close_tag
         tree_to_sax = self._recursive_tree_to_sax
 
-        el_open(u'piecewise', self.NO_ATTR)
+        el_open('piecewise', self.NO_ATTR)
 
-        el_open(u'piece', self.NO_ATTR)
+        el_open('piece', self.NO_ATTR)
         tree_to_sax(tree[2])
         tree_to_sax(tree[1])
-        self._close_tag(u'piece')
+        self._close_tag('piece')
 
         if len(tree) > 3:
-            el_open(u'otherwise', self.NO_ATTR)
+            el_open('otherwise', self.NO_ATTR)
             tree_to_sax(tree[3])
-            el_close(u'otherwise')
+            el_close('otherwise')
 
-        el_close(u'piecewise')
+        el_close('piecewise')
 
     def _send_list(self, tree, list_type, attributes):
         tree_to_sax = self._recursive_tree_to_sax
@@ -378,14 +379,14 @@ class SaxTerm(XMLReader):
         self._close_tag(list_type)
 
     def _send_function(self, fname, tree):
-        self._open_tag(u'apply', self.NO_ATTR)
+        self._open_tag('apply', self.NO_ATTR)
         self._write_element(fname)
 
         tree_to_sax = self._recursive_tree_to_sax
         for elem in islice(tree, 1, None):
             tree_to_sax(elem)
 
-        self._close_tag(u'apply')
+        self._close_tag('apply')
 
     def _open_tag(self, name, attr=NO_ATTR):
         self.parser.startElementNS( (MATHML_NAMESPACE_URI, name), name, attr )

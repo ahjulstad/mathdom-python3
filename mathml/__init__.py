@@ -1,53 +1,53 @@
-MATHML_NAMESPACE_URI = u"http://www.w3.org/1998/Math/MathML"
+MATHML_NAMESPACE_URI = "http://www.w3.org/1998/Math/MathML"
 
 
-UNARY_ARITHMETIC_FUNCTIONS = u"""
+UNARY_ARITHMETIC_FUNCTIONS = """
 factorial minus abs conjugate arg real imaginary floor ceiling
 """
 
-UNARY_LOGICAL_FUNCTIONS    = u"""
+UNARY_LOGICAL_FUNCTIONS    = """
 not
 """
 
-UNARY_ELEMENTARY_CLASSICAL_FUNCTIONS = u"""
+UNARY_ELEMENTARY_CLASSICAL_FUNCTIONS = """
 sin cos tan sec csc cot sinh cosh tanh sech csch coth
 arcsin arccos arctan arccosh arccot arccoth arccsc arccsch
 arcsec arcsech arcsinh arctanh exp ln log
 """
 
-BINARY_ARITHMETIC_FUNCTIONS = u"""
+BINARY_ARITHMETIC_FUNCTIONS = """
 quotient divide minus power rem
 """
 
-NARY_ARITHMETIC_FUNCTIONS = u"""
+NARY_ARITHMETIC_FUNCTIONS = """
 plus times max min gcd lcm
 """
 
-NARY_STATISTICAL_FUNCTIONS = u"""
+NARY_STATISTICAL_FUNCTIONS = """
 mean sdev variance median mode
 """
 
-NARY_LOGICAL_FUNCTIONS = u"""
+NARY_LOGICAL_FUNCTIONS = """
 and or xor
 """
 
-NARY_FUNCTIONAL_FUNCTION = u"""
+NARY_FUNCTIONAL_FUNCTION = """
 compose
 """
 
-BINARY_SET_CONTAINMENT = u"""
+BINARY_SET_CONTAINMENT = """
 in notin
 """
 
-BINARY_RELATIONS = u"""
+BINARY_RELATIONS = """
 neq equivalent approx factorof
 """
 
-NARY_RELATIONS = u"""
+NARY_RELATIONS = """
 eq leq lt geq gt
 """
 
-CONSTANTS = u"""
+CONSTANTS = """
 pi ExponentialE ee ImaginaryI ii gamma infin infty true false NotANumber NaN
 """
 

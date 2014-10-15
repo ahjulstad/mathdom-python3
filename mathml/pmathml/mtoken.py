@@ -1,6 +1,6 @@
-from element import *
+from .element import *
 import warnings
-import opdict
+from . import opdict
 import re
 
 # --- FONT NAMES ---
@@ -45,33 +45,33 @@ class _StretchyParts(object):
 
 # pieces that make up a stretchy operator: upper, middle, and lower parts.
 _stretchy_parenthesis = {
-    '(': _StretchyParts(upper=unichr(0x239b), bar=unichr(0x239c), lower=unichr(0x239d)),
-    '[': _StretchyParts(upper=unichr(0x23a1), bar=unichr(0x23a2), lower=unichr(0x23a3)),
-    '{': _StretchyParts(upper=unichr(0x23a7), middle=unichr(0x23a8),
-			lower=unichr(0x23a9), bar=unichr(0x23aa)),
-    ')': _StretchyParts(upper=unichr(0x239e), bar=unichr(0x239f), lower=unichr(0x23a0)),
-    ']': _StretchyParts(upper=unichr(0x23a4), bar=unichr(0x23a5), lower=unichr(0x23a6)),
-    '}': _StretchyParts(upper=unichr(0x23ab), middle=unichr(0x23ac),
-			lower=unichr(0x23ad), bar=unichr(0x23aa)),
-    unichr(0x222B): # integral  http://home.att.net/~jameskass/code2000_page.htm
-    _StretchyParts(upper=unichr(0x2320),
-                   lower=unichr(0x2321),
-                   bar=unichr(0x23ae)),
-    '|': _StretchyParts(upper=None, lower=None, bar=unichr(0x23ae)),
+    '(': _StretchyParts(upper=chr(0x239b), bar=chr(0x239c), lower=chr(0x239d)),
+    '[': _StretchyParts(upper=chr(0x23a1), bar=chr(0x23a2), lower=chr(0x23a3)),
+    '{': _StretchyParts(upper=chr(0x23a7), middle=chr(0x23a8),
+			lower=chr(0x23a9), bar=chr(0x23aa)),
+    ')': _StretchyParts(upper=chr(0x239e), bar=chr(0x239f), lower=chr(0x23a0)),
+    ']': _StretchyParts(upper=chr(0x23a4), bar=chr(0x23a5), lower=chr(0x23a6)),
+    '}': _StretchyParts(upper=chr(0x23ab), middle=chr(0x23ac),
+			lower=chr(0x23ad), bar=chr(0x23aa)),
+    chr(0x222B): # integral  http://home.att.net/~jameskass/code2000_page.htm
+    _StretchyParts(upper=chr(0x2320),
+                   lower=chr(0x2321),
+                   bar=chr(0x23ae)),
+    '|': _StretchyParts(upper=None, lower=None, bar=chr(0x23ae)),
     }
 
 content_substitutions = {
-    unichr(0x02145): 'D', # &CapitalDifferentialD;
-    unichr(0x02146): 'd', # &DifferentialD;
-    unichr(0x02147): 'e', # &ExponentialE;
-    unichr(0x02148): 'i', # &ImaginaryI;
-    '-':             u'\N{MINUS SIGN}',
-    unichr(0x02AA1): u'\N{MUCH LESS-THAN}', # &LessLess;
-    unichr(0x02AA2): u'\N{MUCH GREATER-THAN}', # &GreaterGreater;
-    unichr(0x02254): u'\N{COLON EQUALS}', # assignment operator
+    chr(0x02145): 'D', # &CapitalDifferentialD;
+    chr(0x02146): 'd', # &DifferentialD;
+    chr(0x02147): 'e', # &ExponentialE;
+    chr(0x02148): 'i', # &ImaginaryI;
+    '-':             '\N{MINUS SIGN}',
+    chr(0x02AA1): '\N{MUCH LESS-THAN}', # &LessLess;
+    chr(0x02AA2): '\N{MUCH GREATER-THAN}', # &GreaterGreater;
+    chr(0x02254): '\N{COLON EQUALS}', # assignment operator
     }
 
-_content_substitutions_rx = re.compile("|".join(map(re.escape, content_substitutions.keys())))
+_content_substitutions_rx = re.compile("|".join(map(re.escape, list(content_substitutions.keys()))))
 
 
 # --------------------------------------------------------
@@ -90,8 +90,8 @@ class MToken(Element):
         #self.__stretchy_font_family = "Code2000"
         self.__stretchy_font_family = "FreeSerif"
 	self.__stretchy_font_style = "Regular"
-	if (self.content == unichr(0x2062) or # &InvisibleTimes;
-	    self.content == unichr(0x2061)    # &ApplyFuncion;
+	if (self.content == chr(0x2062) or # &InvisibleTimes;
+	    self.content == chr(0x2061)    # &ApplyFuncion;
 	    ):
 	    self.setAttributeWeak("lspace", 0.0)
 	    self.setAttributeWeak("rspace", 0.0)
@@ -150,8 +150,8 @@ class MToken(Element):
 	elif self.__parts is not None:
 	    return self._update_stretchy()
 
-	if (self.content == unichr(0x2062) or # &InvisibleTimes;
-	    self.content == unichr(0x2061)):  # &ApplyFunction;
+	if (self.content == chr(0x2062) or # &InvisibleTimes;
+	    self.content == chr(0x2061)):  # &ApplyFunction;
 
 	    self.width = self.Attribute(self, "verythinmathspace").length
 	    self.height = 0
@@ -250,8 +250,8 @@ class MToken(Element):
 			    self.__parts.bar, 0)
 	    
     def draw(self):
-	if (self.content == unichr(0x2062) or
-	    self.content == unichr(0x2061)):
+	if (self.content == chr(0x2062) or
+	    self.content == chr(0x2061)):
 	    return
 	if self.__stretch_width is not None:
 	    self._draw_hstretchy()
@@ -306,7 +306,7 @@ class MOperator(MToken):
 	try:
 	    attrs = opdict.lookup(self.__original_content, form)
 	    #print "found opdict entry for ", self.__original_content, ":"
-	    for key, value in attrs.items():
+	    for key, value in list(attrs.items()):
 		#print "%s => %s" % (key, value)
 		self.setAttributeWeak(key, value)
 	except KeyError:

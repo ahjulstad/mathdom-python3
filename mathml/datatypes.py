@@ -12,7 +12,7 @@ class Complex(complex):
 
     Examples are (1+5i), (0.1-2i), (-i), ...
     """
-    TYPE_NAME = u'complex'
+    TYPE_NAME = 'complex'
 
     __ZERO = Decimal(0)
     def __new__(cls, real, imag=None):
@@ -24,12 +24,12 @@ class Complex(complex):
             else:
                 imag = cls.__ZERO
                 instance = complex.__new__(cls, real)
-        elif isinstance(real, (str, unicode)) and isinstance(imag, (str, unicode)):
+        elif isinstance(real, str) and isinstance(imag, str):
             instance = complex.__new__(cls, cls.__build_complex_str(real, imag))
         else:
             instance = complex.__new__(cls, real, imag)
 
-        instance.__tuple = (instance.__real, instance.__imag) = (unicode(real), unicode(imag))
+        instance.__tuple = (instance.__real, instance.__imag) = (str(real), str(imag))
         return instance
 
     def __complex__(self):
@@ -63,7 +63,7 @@ class Rational(Decimal):
 
     Examples are 1/20, 3/45, ...
     """
-    TYPE_NAME = u'rational'
+    TYPE_NAME = 'rational'
 
     def __new__(cls, num, denom=None):
         if denom is None:
@@ -74,7 +74,7 @@ class Rational(Decimal):
         num, denom = int(num), int(denom)
         instance = Decimal.__new__(cls, Decimal(num) / denom)
         instance.__num, instance.__denom = (num, denom)
-        instance.__tuple = (unicode(num), unicode(denom))
+        instance.__tuple = (str(num), str(denom))
         return instance
 
     def __iter__(self):
@@ -91,11 +91,11 @@ class Rational(Decimal):
 
     @property
     def num_str(self):
-        return unicode(self.__num)
+        return str(self.__num)
 
     @property
     def denom_str(self):
-        return unicode(self.__denom)
+        return str(self.__denom)
 
     def __repr__(self):
         return "Rational(%s/%s)" % (self.num, self.denom)
@@ -106,7 +106,7 @@ class ENotation(Decimal):
 
     An example is 1E20 for 1*10^20.
     """
-    TYPE_NAME = u'e-notation'
+    TYPE_NAME = 'e-notation'
 
     def __new__(cls, num, exponent=None):
         if exponent is None:
@@ -124,7 +124,7 @@ class ENotation(Decimal):
 
         instance = Decimal.__new__(cls, value)
         instance.__num, instance.__exponent = num, exponent
-        instance.__tuple = (unicode(num), unicode(exponent))
+        instance.__tuple = (str(num), str(exponent))
         return instance
 
     def __iter__(self):
@@ -141,11 +141,11 @@ class ENotation(Decimal):
 
     @property
     def num_str(self):
-        return unicode(self.__num)
+        return str(self.__num)
 
     @property
     def exponent_str(self):
-        return unicode(self.__exponent)
+        return str(self.__exponent)
 
     def __repr__(self):
         return "%sE%+04d" % (self.num, self.exponent)

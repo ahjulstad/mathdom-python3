@@ -64,7 +64,7 @@ sys.argv[1:] = distutils_options
 # HELP MESSAGE
 
 if '--help' in options or '--help-mathdom' in options:
-    print """MathDOM package install options:
+    print("""MathDOM package install options:
     --help-mathdom       : show this usage information and exit
     --name=XXX           : force package name to XXX
     --require-imports    : build depending on installed PyXML/lxml  (%s)
@@ -74,7 +74,7 @@ if '--help' in options or '--help-mathdom' in options:
 
     Current build config : lxml (%s), pyxml (%s), forced name (%s)
     """ % (REQUIRE_PACKAGES_FOR_BUILD,
-           HAS_LMATHDOM, HAS_MATHDOM, FORCED_PACKAGE_NAME)
+           HAS_LMATHDOM, HAS_MATHDOM, FORCED_PACKAGE_NAME))
     try:
         sys.argv.remove('--help-mathdom')
         sys.exit(0)
@@ -88,14 +88,14 @@ if REQUIRE_PACKAGES_FOR_BUILD:
         try:
             from lxml.etree import SaxTreeBuilder
         except:
-            print "lxml not installed or not patched."
+            print("lxml not installed or not patched.")
             HAS_LMATHDOM = False
 
     if HAS_MATHDOM:
         try:
             from xml import xpath
         except:
-            print "PyXML not installed."
+            print("PyXML not installed.")
             HAS_MATHDOM = False
 
 # CHECK WHICH PACKAGE TO BUILD
@@ -107,7 +107,7 @@ elif HAS_MATHDOM:
 elif HAS_LMATHDOM:
     PACKAGE_NAME += "-lxml"
 else:
-    raise RuntimeError, "Package must contain mathml.mathdom and/or mathml.lmathdom module!"
+    raise RuntimeError("Package must contain mathml.mathdom and/or mathml.lmathdom module!")
 
 if HAS_LMATHDOM:
     PACKAGE_DATA.update({

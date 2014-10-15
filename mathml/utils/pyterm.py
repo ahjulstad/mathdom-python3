@@ -9,10 +9,10 @@ __all__ = [ 'PyTermBuilder', 'PyTermParser', 'PyBoolExpressionParser', 'ParseExc
 
 class PyTermBuilder(InfixTermBuilder):
     _INTERVAL_NOTATION = {
-        u'closed'      : u'xrange(int(%s),   int(%s)+1)'.replace(u' ', u''),
-        u'closed-open' : u'xrange(int(%s),   int(%s)  )'.replace(u' ', u''),
-        u'open-closed' : u'xrange(int(%s)+1, int(%s)+1)'.replace(u' ', u''),
-        u'open'        : u'xrange(int(%s)+1, int(%s)  )'.replace(u' ', u'')
+        'closed'      : 'xrange(int(%s),   int(%s)+1)'.replace(' ', ''),
+        'closed-open' : 'xrange(int(%s),   int(%s)  )'.replace(' ', ''),
+        'open-closed' : 'xrange(int(%s)+1, int(%s)+1)'.replace(' ', ''),
+        'open'        : 'xrange(int(%s)+1, int(%s)  )'.replace(' ', '')
         }
 
     _OPERATOR_MAP = {
@@ -40,10 +40,10 @@ class PyTermBuilder(InfixTermBuilder):
         }
 
     _NAME_MAP = {
-        u'e'     : u'math.e',
-        u'pi'    : u'math.pi',
-        u'true'  : u'True',
-        u'false' : u'False'
+        'e'     : 'math.e',
+        'pi'    : 'math.pi',
+        'true'  : 'True',
+        'false' : 'False'
         }
 
     def _handle_const_bool(self, operator, operands, affin):
@@ -56,7 +56,7 @@ class PyTermBuilder(InfixTermBuilder):
         real_str = value.real_str
         if real_str == "0":
             real_str = ''
-        return [ u'(%s%s%sj)' % (real_str, (value.imag >= 0) and '+' or '', value.imag_str) ]
+        return [ '(%s%s%sj)' % (real_str, (value.imag >= 0) and '+' or '', value.imag_str) ]
 
     def _handle_case(self, operator, operands, affin_status):
         assert operator == 'case'
@@ -67,7 +67,7 @@ class PyTermBuilder(InfixTermBuilder):
         return result
 
     def _handle_interval(self, operator, operands, affin):
-        assert operator[:9] == u'interval:'
+        assert operator[:9] == 'interval:'
         return [ self._INTERVAL_NOTATION[ operator[9:] ] % tuple(operands) ]
 
 
@@ -79,13 +79,13 @@ from pyparsing import *
 
 class PyTermTokenizer(TermTokenizer):
     _CONSTANT_MAP = {
-        u'math.e'  : u'e',
-        u'math.pi' : u'pi'
+        'math.e'  : 'e',
+        'math.pi' : 'pi'
         }
 
     @cached
     def p_bool(self):
-        p_bool = Keyword(u'True') | Keyword(u'False')
+        p_bool = Keyword('True') | Keyword('False')
         p_bool.setName('bool')
         p_bool.setParseAction(self._parse_bool)
         return p_bool
@@ -117,7 +117,7 @@ class PyTermParser(InfixTermParser):
             start, stop = self._zero(), t[0]
         else:
             start, stop = t
-        return [ (u'interval:closed-open', start, stop) ]
+        return [ ('interval:closed-open', start, stop) ]
 
     def p_case(self, *args):
         return NoMatch()
@@ -135,8 +135,8 @@ class PyBoolExpressionParser(InfixBoolExpressionParser):
 
     @cached
     def p_cmp_in(self):
-        not_in = Combine(CaselessKeyword(u'not') + CaselessKeyword(u'in'), adjacent=False)
-        p_cmp_in = CaselessKeyword(u'in') | not_in
+        not_in = Combine(CaselessKeyword('not') + CaselessKeyword('in'), adjacent=False)
+        p_cmp_in = CaselessKeyword('in') | not_in
         p_cmp_in.setParseAction(self._parse_cmp_operator)
         return p_cmp_in
 

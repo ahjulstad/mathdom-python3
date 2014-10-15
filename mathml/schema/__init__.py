@@ -74,7 +74,7 @@ class SchemaDict(dict):
                     self[name] = XMLSchema(tree)
                 else:
                     self[name] = RelocatableRelaxNG(tree)
-            except Exception, e:
+            except Exception as e:
                 self.BROKEN[name] = e
 
 SCHEMAS = SchemaDict()

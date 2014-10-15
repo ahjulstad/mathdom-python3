@@ -16,7 +16,7 @@ class StylesheetDict(dict):
             name = path.splitext(filename)[0]
             try:
                 self[name] = XSLT(parse(path.join(xslt_dir, filename)))
-            except Exception, e:
+            except Exception as e:
                 self.BROKEN[name] = e
 
 STYLESHEETS = StylesheetDict()

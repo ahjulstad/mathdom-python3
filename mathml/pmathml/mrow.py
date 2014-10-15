@@ -1,5 +1,5 @@
-from element import *
-import mtoken
+from .element import *
+from . import mtoken
 
 class MRow(Element):
     

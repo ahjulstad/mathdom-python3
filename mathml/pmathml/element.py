@@ -1,7 +1,7 @@
-from __future__ import generators
+
 import re, math, weakref
-from plotter import Plotter
-import events
+from .plotter import Plotter
+from . import events
 
 
 class Element(events.EventSource):
@@ -51,7 +51,7 @@ class Element(events.EventSource):
 		return self.__value
 	    # Now we try to convert the string to a numeric length
 	    assert isinstance(self.__value, str) or \
-		   isinstance(self.__value, unicode)
+		   isinstance(self.__value, str)
 	    m = self._length_rx.match(self.__value)
 	    if not m:
 		# Try to dereference symbolic length constants
@@ -139,12 +139,12 @@ class Element(events.EventSource):
     def setAttributeWeak(self, name, value):
 	"""Like setAttribute, but the value is set only if it is not
 	already defined"""
-	if not self.__attributes.has_key(name):
+	if name not in self.__attributes:
 	    self.__attributes[name] = self.Attribute(self, value)
 
     def getAttribute(self, name, recursive=1, default=None):
 	"""Lookup an attribute. Returns an Element.Attribute instance"""
-	assert isinstance(name, str) or isinstance(name, unicode), \
+	assert isinstance(name, str) or isinstance(name, str), \
 	       "type(name) == %s (value=%s) != str" % (str(type(name)), str(name))
 	try:
 	    attr = self.__attributes[name]

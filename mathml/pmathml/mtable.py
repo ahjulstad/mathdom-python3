@@ -1,7 +1,7 @@
-from __future__ import generators
-from element import *
+
+from .element import *
 import warnings
-from mrow import MRow
+from .mrow import MRow
 
 '''
 An implemenation of <mtable> <mtr> and <mtd>.
