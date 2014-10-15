@@ -1,5 +1,7 @@
 # Added by Asmund Hjulstad
 .idea/*
+MANIFEST.in
+*.egg-info/*
 
 # Created by .gitignore support plugin (hsz.mobi)
 ### Python template
